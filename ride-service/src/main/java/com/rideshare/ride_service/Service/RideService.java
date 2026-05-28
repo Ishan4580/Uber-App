@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -59,7 +62,73 @@ public class RideService {
     }
 
 
+    public void updateRideWithDriver(String rideId, String driverId){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with id: "));
 
+        ride.setDriverId(driverId);
+        ride.setStatus(RideStatus.ACCEPTED);
+        rideRepository.save(ride);
+    }
+
+
+    public  RideResponse startRide(String rideId){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with id: "));
+
+        if(ride.getStatus() != RideStatus.ACCEPTED){
+            throw new RuntimeException("Ride cannot be started. Current status: " + ride.getStatus());
+        }
+
+        ride.setStatus(RideStatus.RIDE_STARTED);
+        ride.setStartedAt(LocalDateTime.now());
+
+        rideRepository.save(ride);
+
+        return RideMapper.toResponse(ride);
+    }
+
+    public RideResponse completeRide(String rideId){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with id: "));
+
+        if(ride.getStatus() != RideStatus.RIDE_STARTED){
+            throw new RuntimeException("Ride cannot be completed. Current status: " + ride.getStatus());
+        }
+
+        ride.setStatus(RideStatus.COMPLETED);
+        ride.setCompletedAt(LocalDateTime.now());
+        ride.setActualFare(ride.getEstimatedFare());
+
+        rideRepository.save(ride);
+
+        return RideMapper.toResponse(ride);
+    }
+
+    public RideResponse cancelRide(String rideId){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with id: "));
+
+        ride.setStatus(RideStatus.CANCELLED);
+        rideRepository.save(ride);
+
+        return RideMapper.toResponse(ride);
+    }
+
+    public RideResponse getRideById(String rideId){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with id: "));
+
+        return RideMapper.toResponse(ride);
+    }
+
+    public List<RideResponse> getRidesByRider(String riderId){
+        
+        return rideRepository.findByRiderIdOrderByCreatedAtDese(riderId)
+                .stream()
+                .map(RideMapper::toResponse)
+                .toList();
+    }
 
 
 
