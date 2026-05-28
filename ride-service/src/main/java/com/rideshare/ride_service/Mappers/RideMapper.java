@@ -45,5 +45,32 @@ public class RideMapper {
                 ride.getCompletedAt()
         );
     }
+
+    private static double calculateEstimateFare(RideRequest request){
+
+        //Simplified Haversine distance calculation
+        double lat1 = Math.toRadians(request.getPickupLatitude());
+        double lat2 = Math.toRadians(request.getDropLatitude());
+
+        double lon1 = Math.toRadians(request.getPickupLongitude());
+        double lon2 = Math.toRadians(request.getDropLongitude());
+
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        double a = Math.pow(Math.sin(dLat / 2), 2)
+                   + Math.cos(lat1) * Math.cos(lat2)
+                   * Math.pow(Math.sin(dLon / 2), 2);
+
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double distanceKm = 6371 * c;
+
+
+        //Base fare: 50Rs + 12Rs. perKm
+        double fare = 50 + (distanceKm * 12);
+
+        return Math.round(fare * 100.0) / 100.0; // Round to 2 decimal places
+
+    }
 }
 

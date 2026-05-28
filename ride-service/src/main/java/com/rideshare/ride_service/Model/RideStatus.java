@@ -13,5 +13,6 @@ public enum RideStatus {
     ACCEPTED,
     DRIVER_ARRIVING,
     RIDE_STARTED,
+    COMPLETED,
     CANCELLED
 }

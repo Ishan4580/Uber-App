@@ -1,3 +1,30 @@
+server:
+  port: 8083
+
 spring:
   application:
     name: ride-service
+
+  datasource:
+      url: jdbc:postgresql://localhost:5432/ride_service_db
+      username: postgres
+      password: ishan123
+
+  jpa:
+    hibernate:
+       ddl-auto: update
+    show-sql: true
+
+
+  Kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.support.serializer.JsonSerializer
+
+
+management:
+  endpoints:
+     web:
+       exposure:
+        include: health,info
