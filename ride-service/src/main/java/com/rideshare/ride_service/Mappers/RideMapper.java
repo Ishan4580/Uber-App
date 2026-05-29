@@ -39,7 +39,7 @@ public class RideMapper {
                 ride.getStatus(),
                 ride.getEstimatedFare(),
                 ride.getActualFare(),
-                ride.getCratedAt(),
+                ride.getCreatedAt(),
                 ride.getUpdatedAt(),
                 ride.getStartedAt(),
                 ride.getCompletedAt()

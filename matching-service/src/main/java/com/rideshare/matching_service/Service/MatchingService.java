@@ -19,7 +19,7 @@ import java.util.Optional;
 public class MatchingService {
 
     private final KafkaTemplate<String, RideMatchedEvent> kafkaTemplate;
-    private static final String RIDE_MATCHED_TOPIC = "ride.Matched";
+    private static final String RIDE_MATCHED_TOPIC = "ride.matched";
     private static final double DEFAULT_SEARCH_RADIUS_KM = 5.0;
     private final LocationServiceClient locationServiceClient;
 
@@ -97,7 +97,16 @@ public class MatchingService {
                     //Add 0.1 to avoid division by zero
 
                     double distanceScore = 1.0 / (driver.getDistanceInKm() + 0.1);
-                }))
+
+                    // Simulated rating between 4.0 and 5.0
+                    // In production: fetch from Driver Service
+
+                    double simulatedRating = 4.0 + Math.random();
+
+                    //Final weighted score
+                    return (distanceScore * distanceWeight)
+                            + (simulatedRating * ratingWeight);
+                }));
 
     }
 

@@ -124,7 +124,7 @@ public class RideService {
 
     public List<RideResponse> getRidesByRider(String riderId){
         
-        return rideRepository.findByRiderIdOrderByCreatedAtDese(riderId)
+        return rideRepository.findByRiderIdOrderByCreatedAtDesc(riderId)
                 .stream()
                 .map(RideMapper::toResponse)
                 .toList();

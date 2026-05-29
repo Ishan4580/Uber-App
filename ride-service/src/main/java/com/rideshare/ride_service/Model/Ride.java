@@ -59,7 +59,7 @@ public class Ride {
 
     //Timestamp
     @CreationTimestamp
-    private LocalDateTime cratedAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
