@@ -10,7 +10,7 @@ import java.util.List;
 @FeignClient(name = "location-service", url = "http://localhost:8082")
 public interface LocationServiceClient {
 
-    @GetMapping("/api/v1/locations/drivers/nearby")
+    @GetMapping("/api/v1/location/drivers/nearby")
     List<NearByDriverResponse> getNearByDriver(
             @RequestParam double latitude,
             @RequestParam double longitude,
