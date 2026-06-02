@@ -11,33 +11,35 @@ spring:
       password: ishan123
 
   jpa:
-    hibernate:
-       ddl-auto: update
-    show-sql: true
+     hibernate:
+        ddl-auto: update
+     show-sql: true
 
+  kafka:
+     bootstrap-servers: localhost:9092
+     producer:
+       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+       properties:
+         spring:
+           json:
+             add:
+               type:
+                 headers: true
 
-  Kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-    consumer:
-      group-id: ride-service-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted:
-              packages: "*"
-            use:
-              type:
-                headers: false
-            value:
-              default:
-                type: com.rideshare.ride_service.Event.RideMatchedEvent
+     consumer:
+       group-id: ride-service-group
+       auto-offset-reset: earliest
+       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+       properties:
+         spring:
+           json:
+             trusted:
+               packages: "*"
+             use:
+               type:
+                 headers: true
 
 
 management:

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,13 +63,22 @@ public class RideService {
     }
 
 
+    @Transactional
     public void updateRideWithDriver(String rideId, String driverId){
+        log.info("Attempting to update ride with driverId. RideId: {}, DriverId: {}", rideId, driverId);
+
         Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found with id: "));
+                .orElseThrow(() -> new RuntimeException("Ride not found with id: " + rideId));
+
+        log.info("Found ride. Current status: {}, Current driverId: {}", ride.getStatus(), ride.getDriverId());
 
         ride.setDriverId(driverId);
         ride.setStatus(RideStatus.ACCEPTED);
-        rideRepository.save(ride);
+
+        Ride updatedRide = rideRepository.save(ride);
+
+        log.info("Ride updated successfully. New status: {}, New driverId: {}",
+                updatedRide.getStatus(), updatedRide.getDriverId());
     }
 
 

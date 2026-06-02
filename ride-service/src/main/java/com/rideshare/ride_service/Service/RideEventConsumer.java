@@ -21,9 +21,26 @@ public class RideEventConsumer {
 
         log.info("Received ride matched event: {}", event);
 
-        rideService.updateRideWithDriver(
-                event.getRideId(),
-                event.getDriverId()
-        );
+        try {
+            if(event == null) {
+                log.error("Received null event");
+                return;
+            }
+
+            log.info("Processing ride matched event for rideId: {}, driverId: {}", 
+                    event.getRideId(), event.getDriverId());
+
+            rideService.updateRideWithDriver(
+                    event.getRideId(),
+                    event.getDriverId()
+            );
+
+            log.info("Successfully updated ride with driver");
+        } catch (Exception e) {
+            log.error("Error processing ride matched event. RideId: {}, Error: {}", 
+                    event != null ? event.getRideId() : "unknown", 
+                    e.getMessage(), e);
+        }
     }
 }
+

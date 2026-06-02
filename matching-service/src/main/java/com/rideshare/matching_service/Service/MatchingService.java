@@ -35,6 +35,8 @@ public class MatchingService {
      */
 
     public void matchDriverForRide(RideRequestedEvent event){
+        log.info("Starting ride matching for rideId: {}, location: ({}, {})",
+                event.getRideId(), event.getPickupLatitude(), event.getPickupLongitude());
 
         List<NearByDriverResponse> nearbyDrivers = locationServiceClient.getNearByDriver(
                 event.getPickupLatitude(),
@@ -42,8 +44,10 @@ public class MatchingService {
                 DEFAULT_SEARCH_RADIUS_KM
         );
 
+        log.info("Found {} nearby drivers for rideId: {}", nearbyDrivers.size(), event.getRideId());
+
         if(nearbyDrivers.isEmpty()){
-            log.warn("No nearby drivers found for ride");
+            log.warn("No nearby drivers found for ride: {}", event.getRideId());
             return;
         }
 
@@ -51,7 +55,7 @@ public class MatchingService {
         Optional<NearByDriverResponse> bestDriver = findBestDriver(nearbyDrivers);
 
         if(bestDriver.isEmpty()){
-            log.warn("No suitable driver found for ride");
+            log.warn("No suitable driver found for ride: {}", event.getRideId());
             return;
         }
 
@@ -67,8 +71,11 @@ public class MatchingService {
                 assignedDriver.getDistanceInKm()
         );
 
+        log.info("Publishing ride matched event. RideId: {}, DriverId: {}, Distance: {} km",
+                event.getRideId(), assignedDriver.getDriverId(), assignedDriver.getDistanceInKm());
+
         kafkaTemplate.send(RIDE_MATCHED_TOPIC, event.getRideId(), matchedEvent);
-        log.info("RideMatchedEvent published");
+        log.info("RideMatchedEvent published successfully for rideId: {}", event.getRideId());
     }
 
     /**

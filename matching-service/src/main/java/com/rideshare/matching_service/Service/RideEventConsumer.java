@@ -27,11 +27,22 @@ public class RideEventConsumer {
     )
     public void consumeRideRequestedEvent(RideRequestedEvent event){
         try{
+            if(event == null) {
+                log.error("Received null ride requested event");
+                return;
+            }
+
+            log.info("Processing ride requested event. RideId: {}, Rider: {}",
+                    event.getRideId(), event.getRiderId());
+
             matchingService.matchDriverForRide(event);
+
+            log.info("Ride matching completed for rideId: {}", event.getRideId());
         }
         catch (Exception e){
             log.error("Error processing ride request: {} - {}",
-                    event.getRideId(), e.getMessage());
+                    event != null ? event.getRideId() : "unknown",
+                    e.getMessage(), e);
 
             // In production: send to dead letter queue for retry
         }

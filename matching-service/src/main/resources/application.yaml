@@ -15,17 +15,20 @@ spring:
               packages: "*"
             use:
               type:
-                headers: false
+                headers: true
             value:
               default:
                 type: com.rideshare.matching_service.Event.RideRequestedEvent
 
-
-
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: true
 
     #Location Service URL
     location:
