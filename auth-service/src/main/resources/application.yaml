@@ -6,16 +6,16 @@ spring:
   application:
     name: auth-service
 
-    datasource:
-        url: ${DB_URL}
-        username: ${DB_USERNAME}
-        password: ${DB_PASSWORD}
-        driver-class-name: org.postgresql.Driver
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
-    jpa:
-       hibernate:
-          ddl-auto: update
-       show-sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 jwt:
   secret: ${JWT_SECRET}
@@ -25,3 +25,5 @@ logging:
   level:
     root: INFO
     com.rideshare.auth_service: DEBUG
+
+debug: true
