@@ -3,7 +3,10 @@ package com.rideshare.ride_service.Service;
 
 import com.rideshare.ride_service.DTO.RideRequest;
 import com.rideshare.ride_service.DTO.RideResponse;
+import com.rideshare.ride_service.Event.RideCancelledEvent;
+import com.rideshare.ride_service.Event.RideCompletedEvent;
 import com.rideshare.ride_service.Event.RideRequestEvent;
+import com.rideshare.ride_service.Event.RideStartedEvent;
 import com.rideshare.ride_service.Mappers.RideMapper;
 import com.rideshare.ride_service.Model.Ride;
 import com.rideshare.ride_service.Model.RideStatus;
@@ -23,9 +26,12 @@ import java.util.List;
 public class RideService {
 
     private final RideRepository rideRepository;
-    private final KafkaTemplate<String, RideRequestEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private static final String RIDE_REQUEST_TOPIC = "ride.requested";
+    private static final String RIDE_STARTED_TOPIC = "ride.started";
+    private static final String RIDE_COMPLETED_TOPIC = "ride.completed";
+    private static final String RIDE_CANCELLED_TOPIC = "ride.cancelled";
 
     /**
      * create ride in DB with REQUESTED STATUS
@@ -95,6 +101,14 @@ public class RideService {
 
         rideRepository.save(ride);
 
+        RideStartedEvent event = new RideStartedEvent(
+                ride.getId(),
+                ride.getRiderId(),
+                ride.getDriverId()
+        );
+        kafkaTemplate.send(RIDE_STARTED_TOPIC, ride.getId(), event);
+        log.info("Ride started event published to Kafka for rideId: {}", ride.getId());
+
         return RideMapper.toResponse(ride);
     }
 
@@ -109,8 +123,16 @@ public class RideService {
         ride.setStatus(RideStatus.COMPLETED);
         ride.setCompletedAt(LocalDateTime.now());
         ride.setActualFare(ride.getEstimatedFare());
-
         rideRepository.save(ride);
+
+        RideCompletedEvent event = new RideCompletedEvent(
+                ride.getId(),
+                ride.getRiderId(),
+                ride.getDriverId(),
+                String.valueOf(ride.getActualFare())
+        );
+        kafkaTemplate.send(RIDE_COMPLETED_TOPIC, ride.getId(), event);
+        log.info("Ride completed event published to Kafka for rideId: {}", ride.getId());
 
         return RideMapper.toResponse(ride);
     }
@@ -121,6 +143,14 @@ public class RideService {
 
         ride.setStatus(RideStatus.CANCELLED);
         rideRepository.save(ride);
+
+        RideCancelledEvent event = new RideCancelledEvent(
+                ride.getId(),
+                ride.getRiderId(),
+                ride.getDriverId()
+        );
+        kafkaTemplate.send(RIDE_CANCELLED_TOPIC, ride.getId(), event);
+        log.info("Ride cancelled event published to Kafka for rideId: {}", ride.getId());
 
         return RideMapper.toResponse(ride);
     }

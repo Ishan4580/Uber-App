@@ -29,4 +29,28 @@ public class KafkaConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic rideStartedTopic(){
+        return TopicBuilder.name("ride.started")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic rideCompletedTopic(){
+        return TopicBuilder.name("ride.completed")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic rideCancelledTopic(){
+        return TopicBuilder.name("ride.cancelled")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }
