@@ -7,9 +7,10 @@ spring:
     name: auth-service
 
     datasource:
-        url: jdbc:postgresql://localhost:5432/auth_service_db
-        username: postgres
-        password: ishan123
+        url: ${DB_URL}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        driver-class-name: org.postgresql.Driver
 
     jpa:
        hibernate:
@@ -17,7 +18,7 @@ spring:
        show-sql: true
 
 jwt:
-  secret: mysecretkey
+  secret: ${JWT_SECRET}
   expiry-ms: 3600000 # 1 hour
 
 logging:
