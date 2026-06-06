@@ -26,4 +26,18 @@ logging:
     root: INFO
     com.rideshare.auth_service: DEBUG
 
+
+    #TWILIO CONFIGRATION
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID}
+  auth-token: ${TWILIO_AUTH_TOKEN}
+  from-number: ${TWILIO_FROM_NUMBER}
+
+
+  #OTP CONFIGURATION
+otp:
+    expiry-seconds: 300 # 5 minutes
+    verified-expiry-seconds: 600 # 10 minutes
+    resend-cooldown-seconds: 60 # 1 minute
+
 debug: true

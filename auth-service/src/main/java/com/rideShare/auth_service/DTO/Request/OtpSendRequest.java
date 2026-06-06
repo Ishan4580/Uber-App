@@ -8,11 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
-
+public class OtpSendRequest {
     @NotBlank(message = "Phone number is required")
     private String phone;
-
-    @NotBlank(message = "Password is required")
-    private String password;
 }

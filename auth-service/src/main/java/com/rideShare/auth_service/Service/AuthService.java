@@ -19,19 +19,30 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final OtpService otpService;
 
     public AuthResponse registerRider(RegisterRequest request){
         log.info("Registering new rider with phone: {}", request.getPhone());
+
+        //Validate OTP token and get phone number
+        String verifiedPhone = otpService.validateVerificationToken(
+                request.getPhoneVerificationToken()
+        );
 
         if(userRepository.existsByPhone(request.getPhone())){
             log.info("User already exists with phone: {}", request.getPhone());
             throw new RuntimeException("User already exists with phone: " + request.getPhone());
         }
 
+        if(userRepository.existsByEmail(request.getEmail())){
+            log.info("User already exists with email: {}", request.getEmail());
+            throw new RuntimeException("User already exists with email: " + request.getEmail());
+        }
+
         User newUser = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .phone(request.getPhone())
+                .phone(verifiedPhone)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.RIDER)
                 .active(true)
@@ -60,6 +71,11 @@ public class AuthService {
     public AuthResponse registerDriver(RegisterRequest request){
         log.info("Registering new Driver with phone: {}", request.getPhone());
 
+        //Validate OTP token and get phone number
+        String verifiedPhone = otpService.validateVerificationToken(
+                request.getPhoneVerificationToken()
+        );
+
         if(userRepository.existsByPhone(request.getPhone())){
             throw new RuntimeException("User already exists with phone: " + request.getPhone());
         }
@@ -67,7 +83,7 @@ public class AuthService {
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .phone(request.getPhone())
+                .phone(verifiedPhone)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.DRIVER)
                 .active(true)
@@ -154,13 +170,11 @@ public class AuthService {
             throw new RuntimeException("Invalid refresh token");
         }
 
-        String newAccessToken = jwtService.generateToken(user);
-
         return AuthResponse.builder()
                 .userId(user.getId())
                 .name(user.getName())
                 .role(user.getRole().name())
-                .accessToken(newAccessToken)
+                .accessToken(jwtService.generateToken(user))
                 .refreshToken(refreshToken)
                 .build();
     }
