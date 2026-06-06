@@ -6,10 +6,10 @@ spring:
     name: ride-service
 
   datasource:
-      url: {${DB_URL}}
-      username: {${DB_USERNAME}}
-      password: {${DB_PASSWORD}}
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: ${DB_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+
 
   jpa:
      hibernate:
