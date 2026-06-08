@@ -42,7 +42,8 @@ public class RideMapper {
                 ride.getCreatedAt(),
                 ride.getUpdatedAt(),
                 ride.getStartedAt(),
-                ride.getCompletedAt()
+                ride.getCompletedAt(),
+                ride.getCancelledAt()
         );
     }
 

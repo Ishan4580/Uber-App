@@ -17,6 +17,13 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.common.serialization.StringSerializer
+
+
 jwt:
   secret: ${JWT_SECRET}
   expiry-ms: 3600000 # 1 hour
@@ -29,15 +36,15 @@ logging:
 
     #TWILIO CONFIGRATION
 twilio:
-  account-sid: ${TWILIO_ACCOUNT_SID}
-  auth-token: ${TWILIO_AUTH_TOKEN}
-  from-number: ${TWILIO_FROM_NUMBER}
+  account.sid: ${TWILIO_ACCOUNT_SID}
+  auth.token: ${TWILIO_AUTH_TOKEN}
+  from.number: ${TWILIO_PHONE_NUMBER}
 
 
   #OTP CONFIGURATION
 otp:
-    expiry-seconds: 300 # 5 minutes
-    verified-expiry-seconds: 600 # 10 minutes
-    resend-cooldown-seconds: 60 # 1 minute
+    expiry.seconds: 300 # 5 minutes
+    verified.expiry.seconds: 600 # 10 minutes
+    resend.cooldown.seconds: 60 # 1 minute
 
 debug: true

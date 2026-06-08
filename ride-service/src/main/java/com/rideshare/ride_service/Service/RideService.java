@@ -104,7 +104,8 @@ public class RideService {
         RideStartedEvent event = new RideStartedEvent(
                 ride.getId(),
                 ride.getRiderId(),
-                ride.getDriverId()
+                ride.getDriverId(),
+                ride.getEstimatedFare()
         );
         kafkaTemplate.send(RIDE_STARTED_TOPIC, ride.getId(), event);
         log.info("Ride started event published to Kafka for rideId: {}", ride.getId());
@@ -147,7 +148,8 @@ public class RideService {
         RideCancelledEvent event = new RideCancelledEvent(
                 ride.getId(),
                 ride.getRiderId(),
-                ride.getDriverId()
+                ride.getDriverId(),
+                "RIDER"
         );
         kafkaTemplate.send(RIDE_CANCELLED_TOPIC, ride.getId(), event);
         log.info("Ride cancelled event published to Kafka for rideId: {}", ride.getId());

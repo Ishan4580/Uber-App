@@ -4,10 +4,12 @@ import com.rideShare.auth_service.DTO.Request.LoginRequest;
 import com.rideShare.auth_service.DTO.Request.RegisterRequest;
 import com.rideShare.auth_service.DTO.Response.AuthResponse;
 import com.rideShare.auth_service.Enum.Role;
+import com.rideShare.auth_service.Event.UserRegisterEvent;
 import com.rideShare.auth_service.Model.User;
 import com.rideShare.auth_service.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final OtpService otpService;
+    private final KafkaTemplate<String, UserRegisterEvent> kafkaTemplate;
+    private static final String USER_REGISTERED_TOPIC = "user.registered";
 
     public AuthResponse registerRider(RegisterRequest request){
         log.info("Registering new rider with phone: {}", request.getPhone());
@@ -51,6 +55,12 @@ public class AuthService {
         User saveUser = userRepository.save(newUser);
         log.info("Rider saved with id: {}", saveUser.getId());
 
+        /**
+         * Publish user. Registered event to kafka
+         * ride-service receives this-> creates Rider profiles with riderId = savedUser.getId()
+         * same as driver service
+         */
+        publishUserRegisteredEvent(saveUser, request);
         //Generate Token
 
         String accessToken = jwtService.generateToken(saveUser);
@@ -91,6 +101,7 @@ public class AuthService {
 
         User saveUser = userRepository.save(user);
 
+        publishUserRegisteredEvent(saveUser, request);
         //Generate Token
         String accessToken = jwtService.generateToken(saveUser);
         String refreshToken = jwtService.generateRefreshToken(saveUser);
@@ -178,4 +189,20 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    private void publishUserRegisteredEvent(User savedUser, RegisterRequest request){
+        UserRegisterEvent event = UserRegisterEvent.builder()
+                .userId(savedUser.getId())
+                .name(savedUser.getName())
+                .phone(savedUser.getPhone())
+                .email(savedUser.getEmail())
+                .role(savedUser.getRole().name())
+                .vehicleNumber(request.getVehicleNumber())
+                .vehicleType(request.getVehicleType())
+                .build();
+
+        kafkaTemplate.send(USER_REGISTERED_TOPIC, savedUser.getId(), event);
+        log.info("Published UserRegisterEvent for userId: {}", savedUser.getRole());
+    }
+
 }

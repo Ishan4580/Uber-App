@@ -23,8 +23,9 @@ public class RideResponse {
     private RideStatus status;
     private double estimatedFare;
     private double actualFare;
-    private LocalDateTime cratedAt;
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime startedAt;
     private LocalDateTime completedAt;
+    private LocalDateTime cancelledAt;
 }

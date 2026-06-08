@@ -32,11 +32,11 @@ public class RideController {
                 .body(rideService.requestRide(rideRequest));
     }
 
-    @GetMapping("/{rideId}")
+    @GetMapping("/{riderId}")
     public ResponseEntity<RideResponse> getRideById(
-            @PathVariable String rideId){
+            @PathVariable String riderId){
 
-        return ResponseEntity.ok(rideService.getRideById(rideId));
+        return ResponseEntity.ok(rideService.getRideById(riderId));
     }
 
 
@@ -52,7 +52,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.startRide(rideId));
     }
 
-    @PutMapping("{rideId}/cancel")
+    @PutMapping("/{rideId}/cancel")
     public ResponseEntity<RideResponse> cancelRide(@PathVariable String rideId){
         return ResponseEntity.ok(rideService.cancelRide(rideId));
     }

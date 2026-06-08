@@ -27,4 +27,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "Role is required")
     private String phoneVerificationToken;
+
+    private String vehicleNumber;
+    private String vehicleType;
 }

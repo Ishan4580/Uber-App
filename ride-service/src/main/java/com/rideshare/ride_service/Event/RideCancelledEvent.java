@@ -12,4 +12,5 @@ public class RideCancelledEvent {
     private String rideId;
     private String riderId;
     private String driverId;
+    private String cancelledBy;
 }

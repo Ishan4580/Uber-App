@@ -10,7 +10,6 @@ spring:
       username: ${DB_USERNAME}
       password: ${DB_PASSWORD}
 
-
   jpa:
      hibernate:
         ddl-auto: update
@@ -21,6 +20,12 @@ spring:
      producer:
        key-serializer: org.apache.kafka.common.serialization.StringSerializer
        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+       properties:
+         spring:
+           json:
+             add:
+               type:
+                 headers: true
 
      consumer:
        group-id: ride-service-group
@@ -38,7 +43,6 @@ spring:
              value:
                 default:
                   type: com.rideshare.ride_service.Event.RideMatchedEvent
-
 
 management:
   endpoints:
