@@ -1,5 +1,6 @@
 package com.rideshare.matching_service.Service;
 
+import com.rideshare.matching_service.Client.DriverServiceClient;
 import com.rideshare.matching_service.Client.LocationServiceClient;
 import com.rideshare.matching_service.DTO.NearByDriverResponse;
 import com.rideshare.matching_service.Event.RideMatchedEvent;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,6 +24,7 @@ public class MatchingService {
     private static final String RIDE_MATCHED_TOPIC = "ride.matched";
     private static final double DEFAULT_SEARCH_RADIUS_KM = 5.0;
     private final LocationServiceClient locationServiceClient;
+    private final DriverServiceClient driverServiceClient;
 
     /**
      * Main matching algorithm
@@ -80,14 +83,11 @@ public class MatchingService {
 
     /**
      * Driver Scoring algorithm
-     *
      * Distance: 70%
-     *
      * Rating: 30%
-     *
      * Score: (1 / (1 + distanceInKm)) * 0.7 + (rating / 5.0) * 0.3
-     * @param drivers
-     * @return
+     * "@param drivers"
+     * "@return"
      */
 
 
@@ -108,11 +108,20 @@ public class MatchingService {
                     // Simulated rating between 4.0 and 5.0
                     // In production: fetch from Driver Service
 
-                    double simulatedRating = 4.0 + Math.random();
+                    double actualRating ;
+                    try {
+                        Map<String, Double> ratingResponse = driverServiceClient
+                                .getDriverRating(driver.getDriverId());
+                        actualRating = ratingResponse.getOrDefault("rating", 4.0);
+                    }catch (Exception e){
+                        log.error("Error fetching rating for driverId: {}. Defaulting to 4.0. Error: {}",
+                                driver.getDriverId(), e.getMessage());
+                        actualRating = 4.0;
+                    }
 
                     //Final weighted score
                     return (distanceScore * distanceWeight)
-                            + (simulatedRating * ratingWeight);
+                            + (actualRating * ratingWeight);
                 }));
 
     }

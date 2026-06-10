@@ -47,4 +47,12 @@ otp:
     verified.expiry.seconds: 600 # 10 minutes
     resend.cooldown.seconds: 60 # 1 minute
 
+
+#Eureka Client Configration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
 debug: true

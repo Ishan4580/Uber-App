@@ -32,5 +32,13 @@ spring:
         key-serializer: org.apache.kafka.common.serialization.StringSerializer
         value-serializer: org.springframework.kafka.common.serialization.StringSerializer
 
+#Eureka Client configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
+  instance:
+    prefer-ip-address: true
+    
 debug: true

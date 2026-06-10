@@ -3,6 +3,8 @@ package com.rideshare.ride_service.Service;
 import com.rideshare.ride_service.Event.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.internals.Topic;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +20,10 @@ public class UserRegisteredConsumer {
      * Both services get every message from user. registered topic
      */
 
-
+@KafkaListener(
+        topics = "user.registered",
+        groupId = "ride-service-user-group"
+)
     public void onUserRegistered(UserRegisteredEvent event){
         log.info("ride-service: user.registered received. userId: {}, role: {}", event.getUserId(), event.getRole());
 

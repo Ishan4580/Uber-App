@@ -28,15 +28,21 @@ public class AuthService {
     public AuthResponse registerRider(RegisterRequest request){
         log.info("Registering new rider with phone: {}", request.getPhone());
 
+        if(userRepository.existsByPhone(request.getPhone())){
+            log.info("User already exists with phone: {}", request.getPhone());
+            throw new RuntimeException("User already exists with phone: " + request.getPhone());
+        }
+
         //Validate OTP token and get phone number
         String verifiedPhone = otpService.validateVerificationToken(
                 request.getPhoneVerificationToken()
         );
 
-        if(userRepository.existsByPhone(request.getPhone())){
-            log.info("User already exists with phone: {}", request.getPhone());
-            throw new RuntimeException("User already exists with phone: " + request.getPhone());
+        if(userRepository.existsByPhone(verifiedPhone)){
+            throw new RuntimeException("User verify with phone: " + verifiedPhone);
         }
+
+
 
         if(userRepository.existsByEmail(request.getEmail())){
             log.info("User already exists with email: {}", request.getEmail());
@@ -55,14 +61,13 @@ public class AuthService {
         User saveUser = userRepository.save(newUser);
         log.info("Rider saved with id: {}", saveUser.getId());
 
-        /**
-         * Publish user. Registered event to kafka
-         * ride-service receives this-> creates Rider profiles with riderId = savedUser.getId()
-         * same as driver service
-         */
-        publishUserRegisteredEvent(saveUser, request);
-        //Generate Token
 
+         //Publish user. Registered event to kafka
+         //ride-service receives this-> creates Rider profiles with riderId = savedUser.getId()
+         // same as driver service
+        publishUserRegisteredEvent(saveUser, request);
+        
+        //Generate Token
         String accessToken = jwtService.generateToken(saveUser);
         String refreshToken = jwtService.generateRefreshToken(saveUser);
 
@@ -81,14 +86,20 @@ public class AuthService {
     public AuthResponse registerDriver(RegisterRequest request){
         log.info("Registering new Driver with phone: {}", request.getPhone());
 
+        if(userRepository.existsByPhone(request.getPhone())){
+            throw new RuntimeException("User already exists with phone: " + request.getPhone());
+        }
+
         //Validate OTP token and get phone number
         String verifiedPhone = otpService.validateVerificationToken(
                 request.getPhoneVerificationToken()
         );
 
-        if(userRepository.existsByPhone(request.getPhone())){
-            throw new RuntimeException("User already exists with phone: " + request.getPhone());
+        if(userRepository.existsByPhone(verifiedPhone)){
+            throw new RuntimeException("User verify with phone: " + verifiedPhone);
         }
+
+
 
         User user = User.builder()
                 .name(request.getName())

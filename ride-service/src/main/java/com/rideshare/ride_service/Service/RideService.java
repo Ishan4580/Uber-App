@@ -41,6 +41,9 @@ public class RideService {
     public RideResponse requestRide(RideRequest rideRequest){
         log.info("Processing ride request for rider: {}", rideRequest.getRiderId());
 
+        //Validate rider exists and is active
+        riderService.getRider(rideRequest.getRiderId());
+
         Ride ride = RideMapper.toEntity(rideRequest);
 
         Ride saveRide = rideRepository.save(ride);
@@ -123,6 +126,8 @@ public class RideService {
         ride.setCompletedAt(LocalDateTime.now());
         ride.setActualFare(ride.getEstimatedFare());
         rideRepository.save(ride);
+
+        riderService.incrementRideCount(ride.getRiderId());
 
         kafkaTemplate.send(RIDE_COMPLETED_TOPIC, ride.getId(), new RideCompletedEvent(
                 ride.getId(),
