@@ -30,6 +30,16 @@ public class KafkaConfig {
                 .build();
     }
 
+    //auth-service produces, ride-service + driver-service consume
+    @Bean
+    public NewTopic userRegisteredTopic(){
+        return TopicBuilder.name("user.registered")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    //ride-service produces, notification-service consumes
     @Bean
     public NewTopic rideStartedTopic(){
         return TopicBuilder.name("ride.started")
@@ -38,6 +48,8 @@ public class KafkaConfig {
                 .build();
     }
 
+
+    //ride-service produces, payment + driver + notification-service consume
     @Bean
     public NewTopic rideCompletedTopic(){
         return TopicBuilder.name("ride.completed")
@@ -46,6 +58,7 @@ public class KafkaConfig {
                 .build();
     }
 
+    //ride-service produce, notification-service consume
     @Bean
     public NewTopic rideCancelledTopic(){
         return TopicBuilder.name("ride.cancelled")

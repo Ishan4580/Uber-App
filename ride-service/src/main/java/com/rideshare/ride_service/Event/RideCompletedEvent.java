@@ -12,5 +12,5 @@ public class RideCompletedEvent {
     private String rideId;
     private String riderId;
     private String driverId;
-    private  String actualFare;
+    private  double actualFare;
 }

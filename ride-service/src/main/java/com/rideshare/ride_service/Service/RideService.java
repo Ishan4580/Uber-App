@@ -26,6 +26,7 @@ import java.util.List;
 public class RideService {
 
     private final RideRepository rideRepository;
+    private final RiderService riderService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private static final String RIDE_REQUEST_TOPIC = "ride.requested";
@@ -98,16 +99,13 @@ public class RideService {
 
         ride.setStatus(RideStatus.RIDE_STARTED);
         ride.setStartedAt(LocalDateTime.now());
-
         rideRepository.save(ride);
 
-        RideStartedEvent event = new RideStartedEvent(
+        kafkaTemplate.send(RIDE_STARTED_TOPIC, ride.getId(), new RideStartedEvent(
                 ride.getId(),
                 ride.getRiderId(),
-                ride.getDriverId(),
-                ride.getEstimatedFare()
-        );
-        kafkaTemplate.send(RIDE_STARTED_TOPIC, ride.getId(), event);
+                ride.getDriverId()
+        ));
         log.info("Ride started event published to Kafka for rideId: {}", ride.getId());
 
         return RideMapper.toResponse(ride);
@@ -126,13 +124,12 @@ public class RideService {
         ride.setActualFare(ride.getEstimatedFare());
         rideRepository.save(ride);
 
-        RideCompletedEvent event = new RideCompletedEvent(
+        kafkaTemplate.send(RIDE_COMPLETED_TOPIC, ride.getId(), new RideCompletedEvent(
                 ride.getId(),
                 ride.getRiderId(),
                 ride.getDriverId(),
-                String.valueOf(ride.getActualFare())
-        );
-        kafkaTemplate.send(RIDE_COMPLETED_TOPIC, ride.getId(), event);
+                ride.getActualFare()
+        ));
         log.info("Ride completed event published to Kafka for rideId: {}", ride.getId());
 
         return RideMapper.toResponse(ride);
@@ -145,13 +142,11 @@ public class RideService {
         ride.setStatus(RideStatus.CANCELLED);
         rideRepository.save(ride);
 
-        RideCancelledEvent event = new RideCancelledEvent(
+        kafkaTemplate.send(RIDE_CANCELLED_TOPIC, ride.getId(), new RideCancelledEvent(
                 ride.getId(),
                 ride.getRiderId(),
-                ride.getDriverId(),
-                "RIDER"
-        );
-        kafkaTemplate.send(RIDE_CANCELLED_TOPIC, ride.getId(), event);
+                ride.getDriverId()
+        ));
         log.info("Ride cancelled event published to Kafka for rideId: {}", ride.getId());
 
         return RideMapper.toResponse(ride);
