@@ -7,9 +7,9 @@ spring:
     name: auth-service
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/auth_service_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:ishan123}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -25,7 +25,7 @@ spring:
 
 
 jwt:
-  secret: ${JWT_SECRET:zAsDlPnHeZTUd2e9OXG6l7z8kl+4pqFKGf6h9O6e92I=}
+  secret: ${JWT_SECRET}
   expiryMs: 3600000 # 1 hour
 
 logging:
@@ -36,9 +36,9 @@ logging:
 
     #TWILIO CONFIGRATION
 twilio:
-  account.sid: ${TWILIO_ACCOUNT_SID:ACf266c4681593eb5947bb2f6bcb8d9bf8}
-  auth.token: ${TWILIO_AUTH_TOKEN:ad478b7658d1f507c447f34f01558fbb}
-  from.number: ${TWILIO_PHONE_NUMBER:+18203467202}
+  account.sid: ${TWILIO_ACCOUNT_SID}
+  auth.token: ${TWILIO_AUTH_TOKEN}
+  from.number: ${TWILIO_PHONE_NUMBER}
 
 
   #OTP CONFIGURATION
