@@ -12,8 +12,11 @@
         </processorPath>
         <module name="ride-service" />
         <module name="auth-service" />
-        <module name="driver-service" />
+        <module name="payment-service" />
         <module name="location-service" />
+        <module name="matching-service" />
+        <module name="eureka-server" />
+        <module name="driver-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -21,8 +24,10 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="auth-service" options="-parameters" />
       <module name="driver-service" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
       <module name="location-service" options="-parameters" />
       <module name="matching-service" options="-parameters" />
+      <module name="payment-service" options="-parameters" />
       <module name="ride-service" options="-parameters" />
     </option>
   </component>
